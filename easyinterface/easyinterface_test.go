@@ -2,19 +2,11 @@ package easyinterface
 
 import (
 	"testing"
-//	"github.com/yeka/goeasy/easyinterface"
-	"encoding/json"
 	"fmt"
 )
 
-func createEasyInterfaceFromJSON(s string) *EasyInterface {
-	var i interface{}
-	json.Unmarshal([]byte(s), &i)
-	return &EasyInterface{i}
-}
-
 func TestIsArray(t *testing.T) {
-	e := createEasyInterfaceFromJSON(`[1, 2, 3]`)
+	e := FromJSON(`[1, 2, 3]`)
 	if !e.IsArray() {
 		t.Error("Expecting array")
 	}
@@ -24,7 +16,7 @@ func TestIsArray(t *testing.T) {
 }
 
 func TestIsObject(t *testing.T) {
-	e := createEasyInterfaceFromJSON(`{"number": [1, 2, 3]}`)
+	e := FromJSON(`{"number": [1, 2, 3]}`)
 	if e.IsArray() {
 		t.Error("Not expecting array")
 	}
@@ -34,28 +26,26 @@ func TestIsObject(t *testing.T) {
 }
 
 func TestGetArray(t *testing.T) {
-	e := createEasyInterfaceFromJSON(`["Go", "PHP"]`)
+	e := FromJSON(`["Go", "PHP"]`)
 
 	var v *EasyInterface
 
 	v = e.Get("0")
 	if v.ToString() != "Go" {
-		t.Error(fmt.Sprintf("Expecting nil value, got %#v", v))
+		t.Error(fmt.Sprintf("Expecting Go, got %#v", v))
 	}
 
-	v = e.Get("2")
-	if v != nil {
-		t.Error(fmt.Sprintf("Expecting nil value, got %#v", v))
+	if !e.Get("2").IsNil() {
+		t.Error(fmt.Sprintf("Expecting true value, got %#v", v))
 	}
 
-	v = e.Get("pre-school")
-	if v != nil {
-		t.Error(fmt.Sprintf("Expecting nil value, got %#v", v))
+	if !e.Get("pre-school").IsNil() {
+		t.Error(fmt.Sprintf("Expecting true value, got %#v", v))
 	}
 }
 
 func TestGetObject(t *testing.T) {
-	e := createEasyInterfaceFromJSON(`{"name":"yeka","number":13,"skills": ["Go", "PHP"]}`)
+	e := FromJSON(`{"name":"yeka","number":13,"skills": ["Go", "PHP"]}`)
 	if e.Get("name").ToString() != "yeka" {
 		t.Error("Expecting yeka")
 	}
@@ -66,13 +56,17 @@ func TestGetObject(t *testing.T) {
 		t.Error("Expecting Go")
 	}
 
-	if e.Get("number[2]") != nil {
+	if !e.Get("number[2]").IsNil() {
 		t.Error("Expecting nil value")
 	}
-	v := e.Get("none")
-	if v != nil {
-		t.Error(fmt.Sprintf("Expecting nil value, got %#v", v))
+	if !e.Get("none").IsNil() {
+		t.Error(fmt.Sprintf("Expecting true"))
 	}
+//
+//	s := e.Get("none").ToString()
+//	if s != "" {
+//		t.Error(fmt.Sprintf("Expecting empty string, got %#v", s))
+//	}
 }
 
 func TestToString(t *testing.T) {
@@ -92,24 +86,24 @@ func TestToInt(t *testing.T) {
 }
 
 func TestToStringArray(t *testing.T) {
-	a := createEasyInterfaceFromJSON(`["Go","PHP"]`).ToStringArray()
+	a := FromJSON(`["Go","PHP"]`).ToStringArray()
 	assert(t, 2, len(a))
 	assert(t, "Go", a[0])
 
-	b := createEasyInterfaceFromJSON(`[1, 2, 3]`).ToStringArray()
+	b := FromJSON(`[1, 2, 3]`).ToStringArray()
 	assert(t, 3, len(b))
 	assert(t, "1", b[0])
 	assert(t, "2", b[1])
 }
 
 func TestToIntArray(t *testing.T) {
-	a := createEasyInterfaceFromJSON(`["Go","PHP", "12"]`).ToIntArray()
+	a := FromJSON(`["Go","PHP", "12"]`).ToIntArray()
 	assert(t, 3, len(a))
 	assert(t, 0, a[0])
 	assert(t, 0, a[1])
 	assert(t, 12, a[2])
 
-	b := createEasyInterfaceFromJSON(`[1, 2]`).ToIntArray()
+	b := FromJSON(`[1, 2]`).ToIntArray()
 	assert(t, 2, len(b))
 	assert(t, 1, b[0])
 	assert(t, 2, b[1])

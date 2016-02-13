@@ -3,10 +3,17 @@ package easyinterface
 import (
 	"strconv"
 	"regexp"
+	"encoding/json"
 )
 
 type EasyInterface struct {
 	Interface interface{}
+}
+
+func FromJSON(s string) *EasyInterface {
+	var i interface{}
+	json.Unmarshal([]byte(s), &i)
+	return &EasyInterface{i}
 }
 
 func (this *EasyInterface) ToInt() int {
@@ -88,6 +95,15 @@ func (this *EasyInterface) ToStringArray() []string {
 	return data
 }
 
+func (this *EasyInterface) IsNil() bool {
+	switch this.Interface.(type) {
+	case nil:
+		return true
+	default:
+		return false
+	}
+}
+
 func (this *EasyInterface) IsArray() bool {
 	switch this.Interface.(type) {
 	case []interface{}:
@@ -109,42 +125,42 @@ func (this *EasyInterface) IsObject() bool {
 func (this *EasyInterface) Get(pattern string) *EasyInterface {
 	r1, _ := regexp.Compile(`^([a-z0-9]+)(\[([a-z0-9]+)\])*$`)
 	if !r1.MatchString(pattern) {
-		return nil
+		return &EasyInterface{nil}
 	}
 
 	var result *EasyInterface
 
 	f1 := r1.FindStringSubmatch(pattern)[1]
-	result = this.getinside(f1)
+	result = this.get(f1)
 
 	r2, _ := regexp.Compile(`\[([a-z0-9]+)\]`)
 	f2 := r2.FindAllStringSubmatch(pattern, -1)
 
 	for _, v := range f2 {
-		result = result.getinside(v[1])
+		result = result.get(v[1])
 	}
 
 	return result
 }
 
-func (this *EasyInterface) getinside(key string) *EasyInterface {
+func (this *EasyInterface) get(key string) *EasyInterface {
 	var result EasyInterface
 	var ok bool
 
 	if this.IsObject() {
 		result, ok = this.ToObject()[key]
 		if !ok {
-			return nil
+			return &EasyInterface{nil}
 		}
 	} else if this.IsArray() {
 		index, _ := strconv.Atoi(key)
 		array := this.ToArray()
 		if index >= len(array) {
-			return nil
+			return &EasyInterface{nil}
 		}
 		result = array[index]
 	} else {
-		return nil
+		return &EasyInterface{nil}
 	}
 
 	return &result
