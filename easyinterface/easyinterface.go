@@ -148,6 +148,14 @@ func (this *EasyInterface) Get(pattern string) *EasyInterface {
 	return result
 }
 
+func (this *EasyInterface) ToJSON() string {
+	r ,err := json.Marshal(this.Interface)
+	if err != nil {
+		return ""
+	}
+	return string(r)
+}
+
 func (this *EasyInterface) get(key string) *EasyInterface {
 	var result EasyInterface
 	var ok bool
