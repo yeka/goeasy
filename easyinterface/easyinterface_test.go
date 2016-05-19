@@ -3,6 +3,7 @@ package easyinterface
 import (
 	"testing"
 	"fmt"
+	"encoding/json"
 )
 
 func TestIsArray(t *testing.T) {
@@ -82,6 +83,7 @@ func TestToInt(t *testing.T) {
 	assert(t, 2, (&EasyInterface{float32(2)}).ToInt())
 	assert(t, 2, (&EasyInterface{float64(2)}).ToInt())
 	assert(t, 2, (&EasyInterface{"2"}).ToInt())
+	assert(t, 2, (&EasyInterface{json.Number("2")}).ToInt())
 	assert(t, 0, (&EasyInterface{[]byte(`hello`)}).ToInt())
 }
 

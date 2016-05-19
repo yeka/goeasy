@@ -27,6 +27,9 @@ func (this *EasyInterface) ToInt() int {
 		return int(v)
 	case float64:
 		return int(v)
+	case json.Number:
+		res, _ := strconv.Atoi(string(v))
+		return res
 	}
 	return 0
 }
@@ -41,6 +44,8 @@ func (this *EasyInterface) ToString() string {
 		return strconv.FormatInt(int64(v), 10)
 	case float64:
 		return strconv.FormatInt(int64(v), 10)
+	case json.Number:
+		return string(v)
 	}
 	return ""
 }
