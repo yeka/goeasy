@@ -128,7 +128,7 @@ func (this *EasyInterface) IsObject() bool {
 }
 
 func (this *EasyInterface) Get(pattern string) *EasyInterface {
-	r1, _ := regexp.Compile(`^([a-z0-9]+)(\[([a-z0-9]+)\])*$`)
+	r1, _ := regexp.Compile(`^([a-z0-9_]+)(\[([a-z0-9_]+)\])*$`)
 	if !r1.MatchString(pattern) {
 		return &EasyInterface{nil}
 	}

@@ -46,7 +46,7 @@ func TestGetArray(t *testing.T) {
 }
 
 func TestGetObject(t *testing.T) {
-	e := FromJSON(`{"name":"yeka","number":13,"skills": ["Go", "PHP"]}`)
+	e := FromJSON(`{"name":"yeka","number":13,"skills": ["Go", "PHP"],"turn_on": "beauty"}`)
 	if e.Get("name").ToString() != "yeka" {
 		t.Error("Expecting yeka")
 	}
@@ -60,14 +60,17 @@ func TestGetObject(t *testing.T) {
 	if !e.Get("number[2]").IsNil() {
 		t.Error("Expecting nil value")
 	}
+	if e.Get("turn_on").ToString() != "beauty" {
+		t.Error(fmt.Sprintf("Expecting beauty"))
+	}
 	if !e.Get("none").IsNil() {
 		t.Error(fmt.Sprintf("Expecting true"))
 	}
-//
-//	s := e.Get("none").ToString()
-//	if s != "" {
-//		t.Error(fmt.Sprintf("Expecting empty string, got %#v", s))
-//	}
+	//
+	//	s := e.Get("none").ToString()
+	//	if s != "" {
+	//		t.Error(fmt.Sprintf("Expecting empty string, got %#v", s))
+	//	}
 }
 
 func TestToString(t *testing.T) {
