@@ -2,25 +2,22 @@ package idata
 
 import (
 	"encoding/json"
-	"io"
-	"strings"
-	"strconv"
 	"errors"
-	"bytes"
+	"strconv"
+	"strings"
 )
 
 type IData struct {
 	data interface{}
 }
 
-func FromJSON(r io.Reader) *IData {
-	buf := new(bytes.Buffer)
-	_, err := buf.ReadFrom(r)
+func New(i interface{}) *IData {
+	return &IData{i}
+}
 
+func FromJSON(buf []byte) *IData {
 	var i interface{}
-	if err == nil {
-		json.Unmarshal(buf.Bytes(), &i)
-	}
+	json.Unmarshal(buf, &i)
 	return &IData{i}
 }
 
@@ -34,25 +31,27 @@ func (i *IData) Get(key string) (interface{}, error) {
 		return nil, errors.New("No data")
 	}
 
-	keys := strings.Split(key, ".")
-	var ii interface{} = i.data
+	var ii = i.data
 
-	for _, k := range keys {
-		switch v := ii.(type) {
-		case []interface{}:
-			ki, err := strconv.Atoi(k)
-			if err != nil {
-				return nil, err
-			}
-			if ki >= len(v) {
-				return nil, errors.New("Out of range")
-			}
-			ii = v[ki]
-		case map[string]interface{}:
-			var ok bool
-			ii, ok = v[k]
-			if !ok {
-				return nil, errors.New("Key not found")
+	if key != "" {
+		keys := strings.Split(key, ".")
+		for _, k := range keys {
+			switch v := ii.(type) {
+			case []interface{}:
+				ki, err := strconv.Atoi(k)
+				if err != nil {
+					return nil, err
+				}
+				if ki >= len(v) {
+					return nil, errors.New("Out of range")
+				}
+				ii = v[ki]
+			case map[string]interface{}:
+				var ok bool
+				ii, ok = v[k]
+				if !ok {
+					return nil, errors.New("Key not found")
+				}
 			}
 		}
 	}

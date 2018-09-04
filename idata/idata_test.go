@@ -2,13 +2,13 @@ package idata
 
 import (
 	"testing"
-	"strings"
+
 	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestIData(t *testing.T) {
 	json := `{"name":"hello","skills":[{"title":"swimming"},{"title":"running"}],"addr":{"country":"indonesia"}}`
-	i := FromJSON(strings.NewReader(json))
+	i := FromJSON([]byte(json))
 
 	Convey("Testing IData", t, func() {
 		Convey("Traversing through content", func() {
